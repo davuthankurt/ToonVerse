@@ -23,4 +23,5 @@ Package.resolved
 DerivedData/
 .DS_Store
 
+Assets.xcassets/
 AIService.swift
