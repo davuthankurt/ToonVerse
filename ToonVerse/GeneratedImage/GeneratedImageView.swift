@@ -18,7 +18,10 @@ struct GeneratedImageView: View {
     @State private var isFramePopupActive = false
     @State private var rotationAngle = 0.0
     @State private var animationAmount = 1.0
+    @State private var isGlowAnimationActive = false
     @State private var selectedFrame: FrameProperties?
+    @State private var buttonState: ButtonState = .start
+    @State private var isDownloadButtonPressed = false
 }
 
 extension GeneratedImageView {
@@ -29,8 +32,9 @@ extension GeneratedImageView {
                 Color.black.opacity(0.5)
                     .ignoresSafeArea()
                     .onTapGesture {
-                        withAnimation {
+                        withAnimation(.smooth(duration: 0.8)) {
                             isFramePopupActive = false
+                            rotationAngle -= 720
                         }
                     }
                 panelView
@@ -71,7 +75,7 @@ extension GeneratedImageView {
     
     private var generationView: some View {
         VStack {
-            generateImage(image)
+            viewImage(image)
             Spacer()
             buttonStack
         }
@@ -88,12 +92,34 @@ extension GeneratedImageView {
         }
     }
     
+    private func viewImage(_ image: UIImage) -> some View {
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFit()
+            .clipShape(.rect(cornerRadius: 16))
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 8)
+            .opacity(isFramePopupActive ? 0.5 : 1.0)
+    }
+    
+    
     private var buttonStack: some View {
         HStack {
-            downloadButton
-            generateButton
+            Group {
+                downloadButton
+                generateButton
+            }
+            .shadow(
+                color: buttonState.color,
+                radius: 5
+            )
+            .disabled(isFramePopupActive)
+            .opacity(isFramePopupActive ? 0.5 : 1.0)
+            
             frameButton
         }
+        .disabled(buttonState != .start)
+        .animation(.linear, value: buttonState)
     }
     
     private var downloadButton: some View {
@@ -102,71 +128,96 @@ extension GeneratedImageView {
                 .imageScale(.large)
                 .foregroundColor(.white)
                 .padding()
-                .background(Color.myBlue)
-                .clipShape(Circle())
-                .shadow(radius: 5)
+                .background(.myBackground)
+                .clipShape(.circle)
         }
         .overlay {
-            animationCircle
+            isFramePopupActive ? nil : waveAnimation
         }
         .padding(.leading)
     }
     
-    private var animationCircle: some View {
-        ZStack {
-            Circle()
-                .stroke(Color.myBlue)
-                .scaleEffect(animationAmount)
-                .opacity(2 - animationAmount)
-            Circle()
-                .stroke(Color.myBlue)
-                .scaleEffect(animationAmount - 0.3)
-                .opacity(2 - animationAmount)
-        }
-    }
-    
-    
-    private func generateImage(_ image: UIImage) -> some View {
-        Image(uiImage: image)
-            .resizable()
-            .scaledToFit()
-            .clipShape(.rect(cornerRadius: 10))
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 8)
-            .opacity(isFramePopupActive ? 0.5 : 1.0)
+    private var waveAnimation: some View {
+        Circle()
+            .stroke(buttonState.color)
+            .scaleEffect(animationAmount)
+            .opacity(isDownloadButtonPressed ? 2 - animationAmount : 0)
+            .overlay {
+                Circle()
+                    .stroke(buttonState.color)
+                    .scaleEffect(animationAmount - 0.3)
+                    .opacity(isDownloadButtonPressed ? 2 - animationAmount : 0)
+            }
     }
     
     private var generateButton: some View {
-        Button("Generate") {
+        Button {
             Task {
                 await editImage()
             }
+        } label: {
+                generateButtonStack
         }
         .frame(maxWidth: .infinity, maxHeight: 50)
-        .background(.myBlue)
+        .background(.myBackground)
         .clipShape(.capsule)
-        .foregroundStyle(.white)
-        .font(.title)
         .fontWeight(.bold)
         .padding()
+    }
+
+    private var generateButtonStack: some View {
+        HStack {
+            switch buttonState {
+            case .start:
+                generateButtonImage("play.circle")
+                Text("Generate")
+                    .foregroundStyle(.white)
+                    .font(.title)
+            case .proccessing:
+                SpinnerView()
+                generateButtonText("Generating Image")
+            case .failure:
+                generateButtonImage("xmark.circle")
+                generateButtonText("Request Failed")
+            case .success:
+                generateButtonImage("checkmark.circle")
+                generateButtonText("Image Generated")
+            }
+        }
+    }
+    
+    private func generateButtonImage(_ str: String) -> some View {
+        Image(systemName: str)
+            .tint(.white)
+            .foregroundStyle(.white)
+            .imageScale(.large)
+    }
+    
+    private func generateButtonText(_ str: String) -> some View {
+        Text(str)
+            .foregroundStyle(.white)
+            .font(.headline)
     }
     
     private var frameButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.8)) {
+            withAnimation(.smooth(duration: 0.8)) {
                 isFramePopupActive.toggle()
-                rotationAngle += 720
+                isFramePopupActive ? (rotationAngle += 720) : (rotationAngle -= 720)
             }
         } label: {
             Image(systemName: "rectangle.3.offgrid")
                 .imageScale(.large)
                 .foregroundColor(.white)
                 .padding()
-                .background(Color.myBlue)
-                .clipShape(Circle())
+                .background(.myBackground)
+                .clipShape(.circle)
                 .rotationEffect(.degrees(rotationAngle))
-                .shadow(radius: 5)
         }
+        .shadow(
+            color: buttonState.color,
+            radius: isFramePopupActive ? 20 : 5
+        )
         .padding(.trailing)
     }
     
@@ -201,13 +252,23 @@ extension GeneratedImageView {
 
 extension GeneratedImageView {
     private func editImage() async {
+        buttonState = .proccessing
         let imageSize = size ?? "1024x1024"
-        if let finalImage = await AIService().generateImage(image, prompt, imageSize) {
-            image = finalImage
-        }
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
+        buttonState = .success
+//        if let finalImage = await AIService().generateImage(image, prompt, imageSize) {
+//            image = finalImage
+//            buttonState = .success
+//        } else {
+//            buttonState = .failure
+//        }
+        
+        try? await Task.sleep(nanoseconds: 4_000_000_000)
+        buttonState = .start
     }
     
     private func downloadAction() {
+        isDownloadButtonPressed = true
         animationAmount = 1.0
         withAnimation (.easeInOut(duration: 1)) {
             animationAmount = 2.0
