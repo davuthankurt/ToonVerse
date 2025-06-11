@@ -12,8 +12,13 @@ import NavigatorUI
 struct ContentView: View {
     var body: some View {
         ManagedNavigationStack {
-            HomeView()
+            HomeScreen()
                 .navigationDestination(HomeDestinations.self)
+                .navigationTitle("ToonVerse")
+                .toolbarBackground(Color.myBackground, for: .navigationBar)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarColorScheme(.dark, for: .navigationBar)
+                .preferredColorScheme(.dark)
         }
     }
 }
@@ -21,3 +26,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
