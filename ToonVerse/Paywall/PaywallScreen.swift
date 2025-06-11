@@ -10,16 +10,11 @@ import SwiftUI
 struct PaywallScreen: View {
     @Environment(\.dismiss) var dismiss
     @State private var colorChange = false
-    
+//    Temporary paywall screen
     var body: some View {
         GeometryReader { proxy in
             VStack {
                 alignmentStacks(proxy)
-//                Text("Get started with 3 free image generations.\nNo subscription required.")
-//                    .font(.footnote)
-//                    .multilineTextAlignment(.center)
-//                    .foregroundStyle(.myBlue)
-//                    .padding()
                 subscriptionSelection("$7.99/weak", "Try all features with full flexibility.\nCancel anytime.")
                 subscriptionSelection("$35.99/year", "Save over 50%.\nOne-time payment for a full year of access.")
                 
@@ -119,10 +114,6 @@ struct PaywallScreen: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
-//            .shadow(
-//                color: .white.opacity(0.5),
-//                radius: 5
-//            )
         }
         .frame(maxWidth: .infinity)
         .background(Color.myBackground)
