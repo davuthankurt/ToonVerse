@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PortraitView: View {
-    @Binding var selectionModel: SelectionModel
+    @Environment(SelectionModel.self) var selectionModel
     @Binding var isShowingPicker: Bool
     
     var body: some View {
@@ -95,5 +95,6 @@ struct PortraitView: View {
 
 #Preview {
     @State var model = SelectionModel()
-    PortraitView(selectionModel: $model, isShowingPicker: .constant(false))
+    PortraitView(isShowingPicker: .constant(false))
+        .environment(model)
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SquareView: View {
-    @Binding var selectionModel: SelectionModel
+    @Environment(SelectionModel.self) var selectionModel
     @Binding var isShowingPicker: Bool
 }
 
@@ -88,5 +88,6 @@ extension SquareView {
 
 #Preview {
     @State var model = SelectionModel()
-    SquareView(selectionModel: $model, isShowingPicker: .constant(false))
+    SquareView(isShowingPicker: .constant(false))
+        .environment(model)
 }
