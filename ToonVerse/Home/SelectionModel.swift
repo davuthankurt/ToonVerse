@@ -8,11 +8,10 @@
 import SwiftUI
 import PhotosUI
 
-extension HomeView {
-    @Observable
-    final class SelectionModel {
-        var selectedImage: Image?
-        var selectedItem: PhotosPickerItem?
-        var selectedPrompt: AIFilter?
-    }
+@Observable
+final class SelectionModel {
+    var selectedImage: Image?
+    var selectedItem: PhotosPickerItem?
+    var selectedPrompt: AIFilter?
 }
+
