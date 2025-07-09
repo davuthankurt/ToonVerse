@@ -11,7 +11,6 @@ struct FrameButtonView: View {
     @Binding var isFramePopupActive: Bool
     @Binding var rotationAngle: Double
     @Binding var buttonState: ButtonState
-
     var body: some View {
         Button {
             withAnimation(.smooth(duration: 0.8)) {
