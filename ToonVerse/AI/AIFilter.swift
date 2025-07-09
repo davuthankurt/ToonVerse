@@ -30,6 +30,7 @@ enum AIFilter: CaseIterable, Identifiable {
     case romanStatue
     case tarzan
     case toy
+    case semiRealistic
     
     var id: UUID {
         UUID()
@@ -72,13 +73,15 @@ enum AIFilter: CaseIterable, Identifiable {
         case .superModel:
             return "Super Model"
         case .space:
-            return "Mars"
+            return "Space Warrior"
         case .romanStatue:
             return "Roman Statue"
         case .tarzan:
             return "Jungle Man"
         case .toy:
             return "Become Toy"
+        case .semiRealistic:
+            return "Semi-Realistic"
         }
     }
 
@@ -103,7 +106,7 @@ enum AIFilter: CaseIterable, Identifiable {
         case .cyberpunk:
             return .cyberpunk
         case .gta:
-            return .gta
+            return .gtaAlternative
         case .pixels:
             return .pixelArt
         case .filmPoster:
@@ -126,6 +129,8 @@ enum AIFilter: CaseIterable, Identifiable {
             return .tarzan
         case .toy:
             return .toy
+        case .semiRealistic:
+            return .semiRealisticPortrait
         }
     }
 
@@ -166,13 +171,15 @@ enum AIFilter: CaseIterable, Identifiable {
         case .superModel:
             return "Make the image super model style"
         case .space:
-            return "Make the photo look like it was taken on Mars"
+            return "Make the image Star Wars style. If there’s a person, show them as a Jedi or Sith."
         case .romanStatue:
             return "Make the image ancient Roman statue style"
         case .tarzan:
             return "Make the image Tarzan jungle style"
         case .toy:
             return "Make the image lego style"
+        case .semiRealistic:
+            return "Apply ai cartoon filter"
         }
     }
 }
@@ -183,14 +190,14 @@ extension AIFilter {
     }
     
     static var mustTry: [AIFilter] {
-        return [.cartoon, .toy, .gothic, .bubbleHead, .space, .wildWest, .filmPoster]
+        return [.cartoon, .toy, .gothic, .wildWest, .bubbleHead, .filmPoster]
     }
 
     static var landscapeFilters: [AIFilter] {
-        return [.pixels, .superModel, .tarzan]
+        return [.pixels, .space, .tarzan, .superModel]
     }
     
     static var portraitFilters: [AIFilter] {
-        return [.boxer, .cyberpunk, .gta, .gladiator, .romanStatue]
+        return [.semiRealistic, .cyberpunk, .gta, .boxer, .gladiator, .romanStatue]
     }
 } 
