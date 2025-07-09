@@ -10,10 +10,12 @@ import SwiftUI
 
 struct GeneratedImageView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.navigator) var navigator
     
     @State var image: UIImage
     @State var selectedFilter: AIFilter
     @State var size: String?
+    var imageToGenerate: UIImage
     
     @State private var isFiltersShown = false
     @State private var isFramePopupActive = false
@@ -26,15 +28,23 @@ struct GeneratedImageView: View {
 extension GeneratedImageView {
     var body: some View {
         zStackView
+            .background(.myBackground)
+            .toolbar(.visible)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         dismiss()
+                        
                     } label: {
                         Image(systemName: "chevron.left")
                             .foregroundColor(.white)
+                            .fontWeight(.bold)
                     }
+                    .disabled(buttonState != .start)
+                    .opacity( buttonState != .start ? 0.5 : 1.0 )
+                    .animation(.linear, value: buttonState)
                 }
             }
             .toolbar {
@@ -47,8 +57,12 @@ extension GeneratedImageView {
                     } label: {
                         Text (isFiltersShown ? "Hide Filters" : "Show Filters")
                             .font(.headline)
+                            .fontWeight(.bold)
                             .foregroundStyle(.white)
                     }
+                    .disabled(buttonState != .start)
+                    .opacity(buttonState != .start ? 0.5 : 1.0)
+                    .animation(.linear, value: buttonState)
                 }
             }
     }
@@ -61,14 +75,15 @@ extension GeneratedImageView {
                     .onTapGesture {
                         withAnimation(.smooth(duration: 0.8)) {
                             isFramePopupActive = false
-                            rotationAngle -= 720
+                            if rotationAngle == 720 {
+                                rotationAngle -= 720
+                            }
                         }
                     }
                 panelView
             }
             generationView
         }
-        .background(.myBackground)
     }
     
     private var panelView: some View {
@@ -153,23 +168,33 @@ extension GeneratedImageView {
     
     private var buttonStack: some View {
         HStack {
-            Group {
-                DownloadButtonView(image: $image,
-                                   isDownloadButtonPressed: $isDownloadButtonPressed,
-                                   buttonState: $buttonState,
-                                   isFramePopupActive: $isFramePopupActive)
-                    .padding(.leading)
-                GenerateButtonView(buttonState: $buttonState,
-                                   isFramePopupActive: $isFramePopupActive,
-                                   size: $size)
-                    .padding()
-            }
+            DownloadButtonView(image: $image,
+                               isDownloadButtonPressed: $isDownloadButtonPressed,
+                               buttonState: $buttonState,
+                               isFramePopupActive: $isFramePopupActive)
+            .padding(.leading)
             .disabled(isFramePopupActive || buttonState != .start)
             .opacity(isFramePopupActive ? 0.5 : 1.0)
             .shadow(
                 color: buttonState.color,
                 radius: 5
             )
+            
+            GenerateButtonView(buttonState: $buttonState,
+                               isFramePopupActive: $isFramePopupActive,
+                               size: $size,
+                               imageToShow: $image,
+                               prompt: $selectedFilter,
+                               imageToGenerate: imageToGenerate,
+                               navigator: navigator)
+            .padding()
+            .disabled(isFramePopupActive || buttonState != .start)
+            .opacity(isFramePopupActive ? 0.5 : 1.0)
+            .shadow(
+                color: buttonState.color,
+                radius: 5
+            )
+
             FrameButtonView(isFramePopupActive: $isFramePopupActive,
                             rotationAngle: $rotationAngle,
                             buttonState: $buttonState)
@@ -208,33 +233,6 @@ extension GeneratedImageView {
     }
 }
 
-//extension GeneratedImageView {
-//    private func editImage() async {
-//        buttonState = .proccessing
-//        let imageSize = size ?? "1024x1024"
-//        try? await Task.sleep(nanoseconds: 5_000_000_000)
-//        buttonState = .failure
-////        if let finalImage = await AIService().generateImage(image, prompt, imageSize) {
-////            image = finalImage
-////            buttonState = .success
-////        } else {
-////            buttonState = .failure
-////        }
-//        
-//        try? await Task.sleep(nanoseconds: 3_000_000_000)
-//        buttonState = .start
-//    }
-//    
-//    private func downloadAction() {
-//        isDownloadButtonPressed = true
-//        animationAmount = 1.0
-//        withAnimation (.easeInOut(duration: 1)) {
-//            animationAmount = 2.0
-//        }
-//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-//    }
-//}
-
 #Preview {
-    GeneratedImageView(image: .gta, selectedFilter: .bubbleHead)
+    GeneratedImageView(image: .gta, selectedFilter: .bubbleHead, imageToGenerate: .gta)
 }
