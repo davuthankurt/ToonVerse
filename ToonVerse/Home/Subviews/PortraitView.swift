@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PortraitView: View {
-    @Environment(SelectionModel.self) var selectionModel
+    @EnvironmentObject var selectionModel: SelectionModel
     @Binding var isShowingPicker: Bool
     
     var body: some View {
@@ -41,9 +41,6 @@ struct PortraitView: View {
     
     private var filterStack: some View {
         HStack(spacing: .zero) {
-//            ForEach(AIFilter.allCases.filter{ $0.category == .portrait }) { filter in
-//                filterView(filter)
-//            }
             ForEach(AIFilter.portraitFilters) { filter in
                 filterView(filter)
                     .id(filter == .gta ? 2 : Int.random(in: 3...1000))
@@ -96,5 +93,5 @@ struct PortraitView: View {
 #Preview {
     @State var model = SelectionModel()
     PortraitView(isShowingPicker: .constant(false))
-        .environment(model)
+        .environmentObject(model)
 }

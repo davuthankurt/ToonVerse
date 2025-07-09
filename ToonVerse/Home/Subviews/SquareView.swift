@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SquareView: View {
-    @Environment(SelectionModel.self) var selectionModel
+    @EnvironmentObject var selectionModel: SelectionModel
     @Binding var isShowingPicker: Bool
 }
 
@@ -41,9 +41,6 @@ extension SquareView {
     
     private func filterStack(_ filters: [AIFilter]) -> some View {
         HStack {
-//            ForEach(AIFilter.allCases.filter{ $0.category == .square}) { filter in
-//                filterView(filter)
-//            }
             ForEach(filters) { filter in
                 filterView(filter)
             }
@@ -56,7 +53,6 @@ extension SquareView {
             filterText(filter)
         }
         .padding(.horizontal, 5)
-//        .containerRelativeFrame(.horizontal, count: 2, spacing: 0)
     }
     
     private func filterImage(_ filter: AIFilter) -> some View {
@@ -87,7 +83,7 @@ extension SquareView {
 }
 
 #Preview {
-    @State var model = SelectionModel()
+    @StateObject var model = SelectionModel()
     SquareView(isShowingPicker: .constant(false))
-        .environment(model)
+        .environmentObject(model)
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LandscapeView: View {
-    @Environment(SelectionModel.self) var selectionModel
+    @EnvironmentObject var selectionModel: SelectionModel
     @Binding var isShowingPicker: Bool
     
     var body: some View {
@@ -27,28 +27,16 @@ struct LandscapeView: View {
     }
     
     private var scrollView: some View {
-//        ScrollView(.horizontal, showsIndicators: false) {
-//            filterStack
-//        }
-//        .scrollTargetBehavior(.paging)
-//        .ignoresSafeArea()
         TabView {
             filterView(AIFilter.landscapeFilters[0])
             filterView(AIFilter.landscapeFilters[1])
             filterView(AIFilter.landscapeFilters[2])
+            filterView(AIFilter.landscapeFilters[3])
         }
         .tabViewStyle(.page)
         .frame(maxWidth: .infinity)
         .frame(height: 330)
     }
-//    
-//    private var filterStack: some View {
-//        HStack(spacing: .zero) {
-//            ForEach(AIFilter.landscapeFilters) { filter in
-//                filterView(filter)
-//            }
-//        }
-//    }
     
     private func filterView(_ filter: AIFilter) -> some View {
         ZStack(alignment: .bottom) {
@@ -56,7 +44,6 @@ struct LandscapeView: View {
             filterText(filter)
         }
         .padding(.bottom)
-//        .containerRelativeFrame(.horizontal)
     }
     
     private func filterImage(_ filter: AIFilter) -> some View {
@@ -94,7 +81,7 @@ struct LandscapeView: View {
 }
 
 #Preview {
-    @State var model = SelectionModel()
+    @StateObject var model = SelectionModel()
     LandscapeView(isShowingPicker: .constant(false))
-        .environment(model)
+        .environmentObject(model)
 }
