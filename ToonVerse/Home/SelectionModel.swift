@@ -8,10 +8,8 @@
 import SwiftUI
 import PhotosUI
 
-@Observable
-final class SelectionModel {
-    var selectedImage: Image?
-    var selectedItem: PhotosPickerItem?
-    var selectedPrompt: AIFilter?
+final class SelectionModel: ObservableObject {
+    @Published var selectedImage: Image?
+    @Published var selectedItem: PhotosPickerItem?
+    @Published var selectedPrompt: AIFilter?
 }
-
