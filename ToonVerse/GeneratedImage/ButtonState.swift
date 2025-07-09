@@ -9,7 +9,7 @@ import SwiftUI
 
 enum ButtonState {
     case start
-    case proccessing
+    case processing
     case success
     case failure
     
@@ -17,7 +17,7 @@ enum ButtonState {
         switch self {
         case .start:
             .myBlue
-        case .proccessing:
+        case .processing:
             .white
         case .success:
             .green
